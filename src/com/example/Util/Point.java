@@ -3,6 +3,7 @@ package com.example.Util;
 public class Point {
     private float x;
     private float y;
+    public  int recycleCount = 0;
 
     public Point(float x, float y) {
         this.x = x;

@@ -12,7 +12,9 @@ public class Draw {
     public static final float ARROW_LENGTH = 20f;
     public static final float ARROW_HEIGHT = 5;
     private static final float CIRCLE_RADIUS = 20f;
+    private static final float CIRCLE_INNER_RADIUS = 15f;
     public static final float TWO_POINT_HV_LENGTH = 140;
+
 
     public static Line drawLine(float startX, float startY, float endX, float endY) {
         Line line = new Line();
@@ -27,7 +29,6 @@ public class Draw {
 
     public static Circle drawCircle(Point center) {
         Circle circle = new Circle();
-        Polygon p = new Polygon();
 
         circle.setCenterX(center.getX());
         circle.setCenterY(center.getY());
@@ -37,6 +38,20 @@ public class Draw {
         circle.setFill(null);
         return circle;
     }
+
+    public static Circle drawInnerCircle(Point center) {
+        Circle circle = new Circle();
+        circle.setCenterX(center.getX());
+        circle.setCenterY(center.getY());
+        circle.setRadius(CIRCLE_INNER_RADIUS);
+        circle.setStroke(Color.RED);
+        circle.setStrokeWidth(1);
+        circle.setFill(null);
+        return circle;
+    }
+
+
+
 
     public static Text drawIndexText(Point center,  String value) {
         // make the text position better
@@ -175,13 +190,27 @@ public class Draw {
     }
 
     public static QuadCurve Recycle(Point center) {
-        Point act1 = new Point (center.getX() - CIRCLE_RADIUS, center.getY());
-        Point act2 = new Point (center.getX() , center.getY() + CIRCLE_RADIUS);
-        Point control = new Point(center.getX() - (float)(Math.sin(45) * CIRCLE_RADIUS * 3) , center.getY() +  (float)(Math.sin(45) * CIRCLE_RADIUS * 3));
-        QuadCurve q = new QuadCurve(act1.getX(), act1.getY(), control.getX(), control.getY(), act2.getX(), act2.getY());
-        q.setStrokeWidth(2);
-        q.setStroke(Color.BLUE);
-        q.setFill(null);
+        QuadCurve q;
+        if (center.recycleCount == 0) {
+            Point act1 = new Point (center.getX() - CIRCLE_RADIUS, center.getY());
+            Point act2 = new Point (center.getX() , center.getY() + CIRCLE_RADIUS);
+            Point control = new Point(center.getX() - (float)(Math.sin(45) * CIRCLE_RADIUS * 3) , center.getY() +  (float)(Math.sin(45) * CIRCLE_RADIUS * 3));
+            q = new QuadCurve(act1.getX(), act1.getY(), control.getX(), control.getY(), act2.getX(), act2.getY());
+            q.setStrokeWidth(2);
+            q.setStroke(Color.BLUE);
+            q.setFill(null);
+        } else {
+            Point act1 = new Point (center.getX() - CIRCLE_RADIUS * (float)Math.sin(45), center.getY() - CIRCLE_RADIUS * (float)Math.sin(45));
+            Point act2 = new Point (center.getX() + CIRCLE_RADIUS * (float)Math.sin(45), center.getY() - CIRCLE_RADIUS * (float)Math.sin(45));
+
+            Point control = new Point((act1.getX() + act2.getX()) / 2  , center.getY() -  CIRCLE_RADIUS * 3);
+            q = new QuadCurve(act1.getX(), act1.getY(), control.getX(), control.getY(), act2.getX(), act2.getY());
+            q.setStrokeWidth(2);
+            q.setStroke(Color.BLUE);
+            q.setFill(null);
+        }
+
+        center.recycleCount += 1;
         return q;
     }
 
@@ -204,6 +233,18 @@ public class Draw {
         return gg;
     }
 
+    public static Group drawRecycleAndText(Point center, String value) {
+        Group g = new Group();
+        Group arrowRecycle = Draw.drawRecycleArrowLine(center);
+
+        QuadCurve qqq = (QuadCurve)arrowRecycle.getChildren().get(0);
+        float x = (float) qqq.getControlX();
+        float y = (float) qqq.getControlY();
+
+        g.getChildren().add(arrowRecycle);
+        g.getChildren().add(Draw.drawCharacterText(new Point(x, y) , value, true));
+        return g;
+    }
     public static Point getControlPoint(Point centerStart, Point centerEnd) {
         if ((centerStart.getX() != centerEnd.getX()) && (centerStart.getY() != centerEnd.getY())) {
             return new Point((centerStart.getX() + centerEnd.getX()) / 2, (centerStart.getY() + centerEnd.getY()) / 2);
