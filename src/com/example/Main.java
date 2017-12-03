@@ -195,8 +195,14 @@ public class Main extends Application {
 
                         if (start.getX() != end.getX() && start.getY() != end.getY()) {
                             g.getChildren().add(Draw.drawArrowLine(start, end));
+                            float offSetY = 10f;
+                            if (start.getY() > end.getY()) {
+                                offSetY = -10f;
+                            }
+                            Point percent = Point.PercentPoint(start, end, 0.8f);
+                            g.getChildren().add(Draw.drawCharacterText(new Point(percent.getX(), percent.getY() - offSetY), String.valueOf(characterSet.charAt(i)), false));
                         } else {
-                            g.getChildren().add(Draw.drawQuadArrowLine(start,Draw.getControlPoint(start, end), end, Draw.getT(start, end)));
+                            g.getChildren().add(Draw.drawQuadArrowLineText(start,Draw.getControlPoint(start, end), end, Draw.getT(start, end), String.valueOf(characterSet.charAt(i))));
                         }
                     } else {
                         if (cur != stateTable[cur][i]) {
@@ -204,8 +210,14 @@ public class Main extends Application {
                             end = pointList.get(stateTable[cur][i]);
                             if (start.getX() != end.getX() && start.getY() != end.getY()) {
                                 g.getChildren().add(Draw.drawArrowLine(start, end));
+                                float offSetY = 10f;
+                                if (start.getY() > end.getY()) {
+                                    offSetY = -10f;
+                                }
+                                Point percent = Point.PercentPoint(start, end, 0.8f);
+                                g.getChildren().add(Draw.drawCharacterText(new Point(percent.getX(), percent.getY() - offSetY), String.valueOf(characterSet.charAt(i)), false));
                             } else {
-                                g.getChildren().add(Draw.drawQuadArrowLine(start,Draw.getControlPoint(start, end), end, Draw.getT(start, end)));
+                                g.getChildren().add(Draw.drawQuadArrowLineText(start,Draw.getControlPoint(start, end), end, Draw.getT(start, end), String.valueOf(characterSet.charAt(i))));
                             }
                         } else {
                             start = pointList.get(cur);
